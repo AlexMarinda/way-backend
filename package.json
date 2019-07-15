@@ -1,0 +1,34 @@
+{
+  "name": "way-backend",
+  "version": "1.0.0",
+  "description": "Way farer",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint",
+    "start": "nodemon --exec babel-node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlexMarinda/way-backend.git"
+  },
+  "author": "Alex Malinda",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AlexMarinda/way-backend/issues"
+  },
+  "homepage": "https://github.com/AlexMarinda/way-backend#readme",
+  "dependencies": {
+    "@babel/cli": "^7.5.0",
+    "@babel/core": "^7.5.4",
+    "@babel/node": "^7.2.2",
+    "@babel/polyfill": "^7.4.4",
+    "@babel/preset-env": "^7.5.4",
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "eslint": "^5.16.0",
+    "eslint-config-airbnb-base": "^13.2.0",
+    "eslint-plugin-import": "^2.18.0"
+  }
+}
