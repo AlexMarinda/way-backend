@@ -1,5 +1,5 @@
 import JWT from 'jsonwebtoken';
-
+import bcrypt from 'bcrypt';
 
 // Generate Token
 
@@ -29,5 +29,13 @@ const verifyToken = async (req, res, next) => {
 
 
 
+ const encryptPass = password => bcrypt.hashSync(password, bcrypt.genSaltSync(10));
 
-export { verifyToken, generateToken };
+
+ const checkPassword = (hash, password) =>{ 
+   return bcrypt.compareSync(password, hash)
+   };
+
+
+
+export { verifyToken, generateToken,encryptPass, checkPassword};
