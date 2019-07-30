@@ -1,0 +1,1057 @@
+{
+    "openapi" : "3.0.0",
+    "info" : {
+      "title" : "Way-farer",
+      "description" : "WayFarer is a public bus transportation booking service.",
+      "version" : "1.0"
+    },
+    "servers" : [ 
+    {
+      "url" : "http://localhost:3000"
+    } ],
+    "tags" : [ {
+      "name" : "Authentication"
+    }, {
+      "name" : "Trips"
+    },
+    {
+        "name" : "Booking"
+      } ],
+    "paths" : {
+      "/api/v1/auth/signup" : {
+        "post" : {
+          "tags" : [ "Authentication" ],
+          "summary" : "Creating User Account",
+          "requestBody" : {
+            "description" : "Required field For Sign Up",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "responses" : {
+            "201" : {
+              "description" : "User Created Successful",
+              "content" : {
+                "application/json" : {
+                  "examples" : {
+                    "foo" : {
+                      "value" : {
+                        "status" : "success",
+                        "data" : {
+                          "token" : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1NjM4MjUyOTB9.Bnlp8VDNeNfWzRSO7C-jJQxfuy46jCeFrQZNE8B-tJw",
+                          "first_name" : "teller",
+                          "last_name" : "alex",
+                          "email" : "alex@fdibiz.com",
+                          "is_admin" : false
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400" : {
+              "description" : "User Supplied Malformatted Data",
+              "content" : {
+                "application/json" : {
+                  "example" : {
+                    "status" : 400,
+                    "errors" : [ "email is required", "email is not allowed" ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+
+      "/api/v1/auth/admin/:user_id/" : {
+        "patch" : {
+          "tags" : [ "Authentication" ],
+          "summary" : "make user admin",
+          "parameters" : [
+            {
+            "name" : "Authorization",
+            "in" : "header",
+            "description" : "access token",
+            "required" :true,
+            "schema" : {
+              "type" : "string"
+            }
+          },
+            
+             {
+            "name" : "trip_id",
+            "in" : "path",
+            "description" : "user_id of user  you want to be admin",
+            "required" : true,
+            "style" : "simple",
+            "explode" : false,
+            "schema" : {
+              "type" : "integer",
+              "format" : "int64"
+            }
+          } ],
+          "responses" : {
+            "200" : {
+              "description" : "you make user admin Successful",
+              "content" : {
+                "application/json" : {
+                  "examples" : {
+                    "foo" : {
+                      "value" : {
+                        "status" : 200,
+                        "data" : {
+                          "message" : "you make user admin Successful"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+
+     
+            "401" : {
+              "description" : "No token found",
+              "content" : {
+                "application/json" : {
+                  "example" : {
+                    "status" : 401,
+                    "message" : "Authentication failed!"
+                  }
+                }
+              }
+            },
+            "403" : {
+              "description" : "Anouthorize access",
+              "content" : {
+                "application/json" : {
+                  "example" : {
+                    "status" : 403,
+                    "error" : {
+                      "message" : "Anouthorize access!"
+                    }
+                  }
+                }
+              }
+            },
+            "404" : {
+              "description" : "Resource Is Not Found",
+              "content" : {
+                "application/json" : {
+                  "example" : {
+                    "status" : 404,
+                    "error" : "Route Not Found!"
+                  }
+                }
+              }
+            }
+          },
+            "security" : [ {
+              "bearerAuth" : [ ]
+            } ]
+         
+        }
+          },
+  
+      "/api/v1/auth/signin" : {
+        "post" : {
+          "tags" : [ "Authentication" ],
+          "summary" : "Sign In User.",
+          "requestBody" : {
+            "description" : "Required Field For User To Sign In",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Login"
+                }
+              }
+            }
+          },
+          "responses" : {
+            "200" : {
+              "description" : "User Successful Logged In",
+              "content" : {
+                "application/json" : {
+                  "examples" : {
+                    "foo" : {
+                      "value" : {
+                        "status" : "success",
+                        "data" : {
+                          "token" : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1NjM4MjUyOTB9.Bnlp8VDNeNfWzRSO7C-jJQxfuy46jCeFrQZNE8B-tJw",
+                          "first_name" : "teller",
+                          "last_name" : "alex",
+                          "email" : "alex@fdibiz.com"
+
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400" : {
+              "description" : "User Supplied Malformatted Data",
+              "content" : {
+                "application/json" : {
+                  "example" : {
+                    "status" : 400,
+                    "errors" : [ "email is required", "email is not allowed" ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/v1/trips" : {
+        "get" : {
+          "tags" : [ "Trips" ],
+          "summary" : "Get All Listed Trips",
+          "responses" : {
+            "200" : {
+              "description" : "All Trips listed successful",
+              "content" : {
+                "application/json" : {
+                  "examples" : {
+                    "foo" : {
+                      "value" : {
+                        "status" : 200,
+                        "data" : [ {
+                            "trip_id": 1,
+                            "seating_capacity": "50",
+                            "origin": "kigali",
+                            "destination": "rwamagana",
+                            "trip_date": "1/2/2019",
+                            "farer": "5000"
+                        }, 
+                        {
+                            "trip_id": 2,
+                            "seating_capacity": "50",
+                            "origin": "kigali",
+                            "destination": "butare",
+                            "trip_date": "1/2/2019",
+                            "farer": "5000"
+                        }]
+                    
+                      }
+                    }
+                  }
+                }
+              }
+            },
+
+            "401" : {
+              "description" : "No token found",
+              "content" : {
+                "application/json" : {
+                  "example" : {
+                    "status" : 401,
+                    "message" : "Authentication failed!"
+                  }
+                }
+              }
+            }
+            
+          },
+          "security" : [ {
+            "bearerAuth" : [ ]
+          } ]
+          
+        },
+
+        "post" : {
+            "tags" : [ "Trips" ],
+            "summary" : "Create a Trip",
+            "requestBody" : {
+              "content" : {
+                "application/json" : {
+                  "schema" : {
+                    "$ref" : "#/components/schemas/CreateTrip"
+                  }
+                },
+                "multipart/form-data" : {
+                  "schema" : {
+                    "$ref" : "#/components/schemas/bodyTrips"
+                  }
+                }
+              },
+              "required" : true
+            },
+            "responses" : {
+              "201" : {
+                "description" : "Trip created Successful",
+                "content" : {
+                  "application/json" : {
+                    "examples" : {
+                      "foo" : {
+                        "value" : {
+                          "status" : 201,
+                          "data" : {
+                            "trip_id": 2,
+                            "seating_capacity": "50",
+                            "origin": "kigali",
+                            "destination": "butare",
+                            "trip_date": "1/2/2019",
+                            "farer": "5000"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "400" : {
+                "description" : "User  Malformatted Data",
+                "content" : {
+                  "application/json" : {
+                    "example" : {
+                      "status" : 400,
+                      "errors" : [ "origin is required", "origin is string" ]
+                    }
+                  }
+                }
+              },
+              "401" : {
+                "description" : "No token found",
+                "content" : {
+                  "application/json" : {
+                    "example" : {
+                      "status" : 401,
+                      "message" : "Authentication failed!"
+                    }
+                  }
+                }
+              }
+            },
+            "security" : [ {
+              "bearerAuth" : [ ]
+            } ]
+         
+          }
+  
+
+    },
+      "/api/v1/trips/{trip_id}" : {
+        "get" : {
+          "tags" : [ "Trips" ],
+          "summary" : "Get a specific  trip",
+          "parameters" : [ {
+            "name" : "trip_id",
+            "in" : "path",
+            "required" : true,
+            "style" : "simple",
+            "explode" : false,
+            "schema" : {
+              "type" : "integer"
+            }
+          } ],
+          "responses" : {
+            "200" : {
+              "description" : "Listed a specific trips successful",
+              "content" : {
+                "application/json" : {
+                  "examples" : {
+                    "foo" : {
+                      "value" : {
+                        "status" : 200,
+                        "data" : [ {
+                            "trip_id": 2,
+                            "seating_capacity": "50",
+                            "bus_license_number" : " RAC454A",
+                            "origin": "kigali",
+                            "destination": "butare",
+                            "trip_date": "1/2/2019",
+                            "farer": "5000"
+                        } ]
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "404" : {
+              "description" : "Resource Is Not Found",
+              "content" : {
+                "application/json" : {
+                  "example" : {
+                    "status" : 404,
+                    "error" : "Route Not Found!"
+                  }
+                }
+              }
+            }
+          },
+          "security" : [ {
+            "bearerAuth" : [ ]
+          } ]
+        }
+        },
+
+        "/api/v1/trips/filter/" : {
+          "get" : {
+            "tags" : [ "Trips" ],
+            "summary" : "filter trip ",
+            "parameters" : [
+              {
+              "name" : "origin",
+              "in" : "parameter",
+              "description" : "filter origin or destination",
+              "required" :true,
+              "schema" : {
+                "type" : "string"
+              }
+            } ],
+            "responses" : {
+              "200" : {
+                "description" : "filter trip Successful",
+                "content" : {
+                  "application/json" : {
+                    "examples" : {
+                      "foo" : {
+                        "value" : {
+                          "status" : 200,
+                          "data" : [ {
+                              "trip_id": 2,
+                              "seating_capacity": "50",
+                              "bus_license_number" : " RAC454A",
+                              "origin": "kigali",
+                              "destination": "butare",
+                              "trip_date": "1/2/2019",
+                              "farer": "5000"
+                          } ]
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+  
+       
+              "401" : {
+                "description" : "No token found",
+                "content" : {
+                  "application/json" : {
+                    "example" : {
+                      "status" : 401,
+                      "message" : "Authentication failed!"
+                    }
+                  }
+                }
+              },
+              "403" : {
+                "description" : "Anouthorize access",
+                "content" : {
+                  "application/json" : {
+                    "example" : {
+                      "status" : 403,
+                      "error" : {
+                        "message" : "Anouthorize access!"
+                      }
+                    }
+                  }
+                }
+              },
+              "404" : {
+                "description" : "Resource Is Not Found",
+                "content" : {
+                  "application/json" : {
+                    "example" : {
+                      "status" : 404,
+                      "error" : "Route Not Found!"
+                    }
+                  }
+                }
+              }
+            },
+              "security" : [ {
+                "bearerAuth" : [ ]
+              } ]
+           
+          }
+            },
+
+
+        "/api/v1/trips/{trip_id}/cancel" : {
+        "patch" : {
+          "tags" : [ "Trips" ],
+          "summary" : "Cancel a trip",
+          "parameters" : [
+            {
+            "name" : "Authorization",
+            "in" : "header",
+            "description" : "access token",
+            "required" :true,
+            "schema" : {
+              "type" : "string"
+            }
+          },
+            
+             {
+            "name" : "trip_id",
+            "in" : "path",
+            "description" : "trip_id of trips  to cancel",
+            "required" : true,
+            "style" : "simple",
+            "explode" : false,
+            "schema" : {
+              "type" : "integer",
+              "format" : "int64"
+            }
+          } ],
+          "responses" : {
+            "200" : {
+              "description" : "Trip Cancel Successful",
+              "content" : {
+                "application/json" : {
+                  "examples" : {
+                    "foo" : {
+                      "value" : {
+                        "status" : 200,
+                        "data" : {
+                          "message" : "Trip Cancel Successful"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+
+     
+            "401" : {
+              "description" : "No token found",
+              "content" : {
+                "application/json" : {
+                  "example" : {
+                    "status" : 401,
+                    "message" : "Authentication failed!"
+                  }
+                }
+              }
+            },
+            "403" : {
+              "description" : "Anouthorize access",
+              "content" : {
+                "application/json" : {
+                  "example" : {
+                    "status" : 403,
+                    "error" : {
+                      "message" : "Anouthorize access!"
+                    }
+                  }
+                }
+              }
+            },
+            "404" : {
+              "description" : "Resource Is Not Found",
+              "content" : {
+                "application/json" : {
+                  "example" : {
+                    "status" : 404,
+                    "error" : "Route Not Found!"
+                  }
+                }
+              }
+            }
+          },
+            "security" : [ {
+              "bearerAuth" : [ ]
+            } ]
+         
+        }
+          },
+
+
+          "/api/v1/trips/{trip_id}/activety" : {
+            "patch" : {
+              "tags" : [ "Trips" ],
+              "summary" : "activety a trip",
+              "parameters" : [
+                {
+                "name" : "Authorization",
+                "in" : "header",
+                "description" : "access token",
+                "required" :true,
+                "schema" : {
+                  "type" : "string"
+                }
+              },
+                
+                 {
+                "name" : "trip_id",
+                "in" : "path",
+                "description" : "trip_id of trip  activety",
+                "required" : true,
+                "style" : "simple",
+                "explode" : false,
+                "schema" : {
+                  "type" : "integer",
+                  "format" : "int64"
+                }
+              } ],
+              "responses" : {
+                "200" : {
+                  "description" : "Trip activety Successful",
+                  "content" : {
+                    "application/json" : {
+                      "examples" : {
+                        "foo" : {
+                          "value" : {
+                            "status" : 200,
+                            "data" : {
+                              "message" : "Trip activety Successful"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+    
+         
+                "401" : {
+                  "description" : "No token found",
+                  "content" : {
+                    "application/json" : {
+                      "example" : {
+                        "status" : 401,
+                        "message" : "Authentication failed!"
+                      }
+                    }
+                  }
+                },
+                "403" : {
+                  "description" : "Anouthorize access",
+                  "content" : {
+                    "application/json" : {
+                      "example" : {
+                        "status" : 403,
+                        "error" : {
+                          "message" : "Anouthorize access!"
+                        }
+                      }
+                    }
+                  }
+                },
+                "404" : {
+                  "description" : "Resource Is Not Found",
+                  "content" : {
+                    "application/json" : {
+                      "example" : {
+                        "status" : 404,
+                        "error" : "Route Not Found!"
+                      }
+                    }
+                  }
+                }
+              },
+                "security" : [ {
+                  "bearerAuth" : [ ]
+                } ]
+             
+            }
+              },
+      
+       
+        
+
+         
+      "/api/v2/bookings" : {
+        "get" : {
+          "tags" : [ "Booking" ],
+          "summary" : "Get all booking seat",
+          "parameters" : [ {
+            "name" : "type",
+            "in" : "path",
+            "required" : true,
+            "style" : "form",
+            "explode" : false,
+            "schema" : {
+              "type" : "string"
+            }
+          } ],
+          "responses" : {
+            "200" : {
+              "description" : "All booking seat",
+              "content" : {
+                "application/json" : {
+                  "examples" : {
+                    "foo" : {
+                      "value" : {
+                        "status" : 200,
+                        "data" : [ {
+                          "booking_id" : 2,
+                          "bus_license_number" : " RAC456A",
+                          "trip_date" : " 2/5/2019",
+                          "first_name" : " alex",
+                          "last_name" : " marinda",
+                          "user_email" : "malalex44@gmail.com"
+                        } ,
+                        {
+                            "booking_id" : 3,
+                            "bus_license_number" : " RAC454A",
+                            "trip_date" : " 1/5/2019",
+                            "first_name" : " teller",
+                            "last_name" : " alex",
+                            "user_email" : "alex@fdibiz.com"
+                          }]
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "404" : {
+              "description" : "Resource Is Not Found",
+              "content" : {
+                "application/json" : {
+                  "example" : {
+                    "status" : 404,
+                    "error" : "Route Not Found!"
+                  }
+                }
+              }
+            }
+          },
+          "security" : [ {
+            "bearerAuth" : [ ]
+          } ]
+        },
+        
+        "post" : {
+          "tags" : [ "Booking" ],
+          "summary" : "Book a seat on a trip",
+          "requestBody" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/bookSeat"
+                }
+              },
+              "multipart/form-data" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/bodyBook"
+                }
+              }
+            },
+            "required" : true
+          },
+          "responses" : {
+            "201" : {
+              "description" : "Book A Seat Successful",
+              "content" : {
+                "application/json" : {
+                  "examples" : {
+                    "foo" : {
+                      "value" : {
+                        "status" : 201,
+                        "data" : {
+                            "booking_id" : 3,
+                            "bus_license_number" : " RAC454A",
+                            "trip_date" : " 1/5/2019",
+                            "first_name" : " teller",
+                            "last_name" : " alex",
+                            "user_email" : "alex@fdibiz.com"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400" : {
+              "description" : "User  Malformatted Data",
+              "content" : {
+                "application/json" : {
+                  "example" : {
+                    "status" : 400,
+                    "errors" : [ "user_id is required", "user_id is integer" ]
+                  }
+                }
+              }
+            },
+            "401" : {
+              "description" : "No token found",
+              "content" : {
+                "application/json" : {
+                  "example" : {
+                    "status" : 401,
+                    "message" : "Authentication failed!"
+                  }
+                }
+              }
+            }
+          },
+          "security" : [ {
+            "bearerAuth" : [ ]
+          } ]
+        }
+      },
+      "/api/v1/bookings/{booking_id}/delete/" : {
+        "delete" : {
+          "tags" : [ "Booking" ],
+          "summary" : "Delete a booking",
+          "parameters" : [ {
+            "name" : "booking_id",
+            "in" : "path",
+            "required" : true,
+            "style" : "simple",
+            "explode" : false,
+            "schema" : {
+              "type" : "string"
+            }
+          } ],
+          "responses" : {
+            "200" : {
+              "description" : "Successful Delete a booking",
+              "content" : {
+                "application/json" : {
+                  "examples" : {
+                    "foo" : {
+                      "value" : {
+                        "status" : 200,
+                        "data" : {                      
+                          "message" : " Booking deleted successfully"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401" : {
+              "description" : "No token found",
+              "content" : {
+                "application/json" : {
+                  "example" : {
+                    "status" : 401,
+                    "message" : "Authentication failed!"
+                  }
+                }
+              }
+            },
+            "403" : {
+              "description" : "Your Are Not Allowed To Do What Your Trying To Do",
+              "content" : {
+                "application/json" : {
+                  "example" : {
+                    "status" : 403,
+                    "error" : {
+                      "message" : "You are allowed to delete your booking only!"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "security" : [ {
+            "bearerAuth" : [ ]
+          } ]
+        }
+      }
+    },
+    "components" : {
+      "schemas" : {
+        "Login" : {
+          "type" : "object",
+          "properties" : {
+            "email" : {
+              "type" : "string",
+              "example" : "malalex44@gmail.com.com"
+            },
+            "password" : {
+              "type" : "string",
+              "example" : "way123"
+            }
+          }
+        },
+        "User" : {
+          "type" : "object",
+          "properties" : {
+            "email" : {
+              "type" : "string",
+              "example" : "malalex44@gmail.com"
+            },
+            "first_name" : {
+              "type" : "string",
+              "example" : "Alex"
+            },
+            "last_name" : {
+              "type" : "string",
+              "example" : "Marinda"
+            },
+            "password" : {
+              "type" : "string",
+              "example" : "way123"
+            }
+
+            }
+          },
+        
+ 
+
+        "CreateTrip" : {
+          "type" : "object",
+          "properties" : {
+            "seating_capacity" : {
+                "type" : "integer",
+                "example" : 1
+              },
+              "bus_license_number" : {
+                "type" : "integer",
+                "example" : 50
+              },
+              "origin" : {
+                "type" : "string",
+                "example" : "kigali"
+              },
+              "destination" : {
+                "type" : "string",
+                "example" : "rwamagana"
+              },
+              "trip_date" : {
+                "type" : "date",
+                "example" : "2/3/2019"
+              },
+              "fare" : {
+                "type" : "float",
+                "example" : "5000"
+              }
+          }
+        },
+
+
+        "bodyTrips" : {
+          "type" : "object",
+          "properties" : {
+            "seating_capacity" : {
+                "type" : "integer",
+                "example" : 1
+              },
+              "bus_license_number" : {
+                "type" : "integer",
+                "example" : 50
+              },
+              "origin" : {
+                "type" : "string",
+                "example" : "kigali"
+              },
+              "destination" : {
+                "type" : "string",
+                "example" : "rwamagana"
+              },
+              "trip_date" : {
+                "type" : "date",
+                "example" : "2/3/2019"
+              },
+              "fare" : {
+                "type" : "float",
+                "example" : "5000"
+              }
+          }
+        },
+        "bookSeat" : {
+          "type" : "object",
+          "properties" : {
+              "Trip_id" : {
+                  "type" : "integer",
+                  "example" : 3
+              },
+              "user_id" : {
+                  "type" : "integer",
+                  "example" : 5
+                },
+              "created_on" : {
+                "type" : "date",
+                "example" : "2/3/2019"
+              }
+   
+          }
+        },
+
+        "bodyBook" : {
+          "type" : "object",
+          "properties" : {
+              "Trip_id" : {
+                  "type" : "integer",
+                  "example" : 3
+              },
+              "user_id" : {
+                  "type" : "integer",
+                  "example" : 5
+                },
+              "created_on" : {
+                "type" : "date",
+                "example" : "2/3/2019"
+              }
+   
+          }
+        }
+      }
+    },
+
+
+    
+      "responses" : {
+        "UnauthorizedError" : {
+          "description" : "Access token is missing or invalid",
+          "content" : {
+            "application/json" : {
+              "example" : {
+                "status" : 401,
+                "message" : "Authentication failed!"
+              }
+            }
+          }
+        },
+        "MalFormattedDataError" : {
+          "description" : "User Supplied Malformatted Data",
+          "content" : {
+            "application/json" : {
+              "example" : {
+                "status" : 400,
+                "errors" : [ "address is required", "addresss is not allowed" ]
+              }
+            }
+          }
+        },
+        "ForbiddenError" : {
+          "description" : "Your Are Not Allowed To Do What Your Trying To Do",
+          "content" : {
+            "application/json" : {
+              "example" : {
+                "status" : 403,
+                "error" : {
+                  "message" : "You are not allowed!"
+                }
+              }
+            }
+          }
+        },
+        "NotFoundError" : {
+          "description" : "Resource Is Not Found",
+          "content" : {
+            "application/json" : {
+              "example" : {
+                "status" : 404,
+                "error" : "Route Not Found!"
+              }
+            }
+          }
+        }
+      },
+      "securitySchemes" : {
+        "bearerAuth" : {
+          "type" : "http",
+          "scheme" : "bearer",
+          "bearerFormat" : "JWT"
+        }
+      }
+    }
+  
