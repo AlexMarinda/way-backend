@@ -1,0 +1,19 @@
+{
+	"folders": [
+		{
+			"path": "/Users/apple/Desktop/way-backend"
+		},
+		{
+			"path": "/Users/apple/Documents/own"
+		},
+		{
+			"path": "/Users/apple/node-express-postgresql-sequelize-master"
+		},
+		{
+			"path": "/Users/apple/reflection_app_server-develop"
+		}
+	],
+	"settings": {
+		"git.ignoreLimitWarning": true
+	}
+}
