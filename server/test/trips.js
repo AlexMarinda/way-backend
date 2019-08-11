@@ -8,7 +8,7 @@ chai.use(chaiHttp);
 chai.should()
 
 describe('Trips', () => {
-  describe('GET /', () => {
+  describe('GET/', () => {
     it('it should display all available trips', done => {
         chai.request(app).get('/api/v1/trips').end((err, res) => {
           res.should.have.status(200);
@@ -31,7 +31,7 @@ describe('Trips', () => {
 
   })
 
-   describe('POST /', () => {
+   describe('POST/', () => {
     it('it should display all available trips', done => {
         chai.request(app).post('/api/v1/trips').end((err, res) => {
           res.should.have.status(200);
@@ -45,7 +45,7 @@ describe('Trips', () => {
 
   })
 
-   describe('PATCH /', () => {
+   describe('PATCH/', () => {
  it('it should cancel trip ', done => {
         chai.request(app).patch('/api/v1/trips/1/cancel/').end((err, res) => {
           res.should.have.status(200);

@@ -6,7 +6,8 @@
   "scripts": {
     "lint": "eslint",
     "start": "nodemon --exec babel-node server/index.js",
-    "test": "nyc --reporter=html --reporter=text mocha  server/**/*.js   --require @babel/register --exit"
+    "test": "nyc --reporter=html --reporter=text mocha  server/**/*.js   --require @babel/register --exit",
+    "migrate": "babel-node server/database/db_init.js"
   },
   "repository": {
     "type": "git",

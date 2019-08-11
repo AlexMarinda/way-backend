@@ -1,63 +1,83 @@
-import {generateToken,encryptPass, checkPassword} from './../helpers';
-import users from '../model/users'
+import {generateToken,encryptPass, checkPassword} from './../helpers/index';
+import users from '../model/users';
+import DbHelper from './../helpers/DbHelper';
+import Respond from '../helpers/responseHandle';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+const { response } = Respond;
+
 
 
 //class contain all user operation
 class UserController {
     
 // new user 
-static  registerUser(req, res) {
+static   async registerUser (req, res) {
 
 const newUser = {
-user_id:users.length + 1,
 email:req.body.email,
 password:encryptPass(req.body.password),
 first_name: req.body.first_name,
 last_name: req.body.last_name
 };
-for (let i =0; i<users.length;i++){
-  
-    if(users[i].email===req.body.email )
-       
-      return res.status(200).send({ status: 'success', data: "choose another email this was taken" });
-      
-           
-        }
-const token = generateToken(users.email);
-users.push(newUser);
+const { error: firstError, response: firstResult } = await DbHelper.findOne('users', 'email', newUser.email);
 
-return res.status(201).send({ status: 'success', data: { 
-token,
-email:req.body.email,
-password:encryptPass(req.body.password),
-first_name: req.body.first_name,
-last_name: req.body.last_name
- } });
+if (firstError) {
+  return response(res, 500, 'Oops! unexpected things happened into server', true);
+}
+if(firstResult.rowCount>0){
+  return response(res, 409, 'choose another email this was taken!', true);
+
+}
+
+const { error, response: result } = await DbHelper.insert('users', newUser);
+if (error) {
+ 
+  return response(res, 400, error, true);
+}
+const [creatededUser] = result.rows;
+
+const token = generateToken(creatededUser);
+users.push(newUser);
+delete creatededUser.password;
+return response(res, 201,  {token,...creatededUser});
 
 }
 
 
 // user signin function
-static  login(req, res) {
+static async login(req, res) {
 
 
 const {email, password}=req.body;
+const { error, response: result } = await DbHelper.findOne('users', 'email', email);
+
+if (error) {
+  console.log(error)
+  return response(res, 500, 'Oops! unexpected things happened into server', true);
+}
+
+const { rows, rowCount } = result;
 
 
-for (let i =0; i<users.length;i++){
+if (rowCount > 0) {
+  // compare password
+  const [currentUser] = rows;
+console.log(currentUser);
+  if (checkPassword(currentUser.password,password)) {
+    const token = generateToken(currentUser);
+    delete currentUser.password;
+    return res.status(200).json({
+      status: 'success',
+      data: {
+        token,...currentUser
+      }
+    });
+  }
+}
 
-    if((users[i].email===email) && (checkPassword(users[i].password,password))){
-        const token = generateToken(users[i]);
-        return res.status(200).send({ status: 'success', data: { 
-            token,
-            user_id:users.length + 1,
-            email:users[i].email,
-            password:encryptPass(req.body.password),
-            first_name: users[i].first_name,
-            last_name: users[i].last_name
-             } });
-           }
-        }
 
     return res.status(401).send({ status: 'success', data: { 
 'message':'User not found!'

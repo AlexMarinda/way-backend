@@ -8,9 +8,9 @@ class CreateTrip {
     
 // trip created
 
-static  trip(req, res) {
+static  async trip(req, res) {
+  console.log('req', req.body);
 const newTrip = {
-trip_id:trips.length + 1,
 seating_capacity:req.body.seating_capacity,
 bus_license_number:req.body.bus_license_number,
 origin: req.body.origin,
@@ -30,20 +30,17 @@ for (let i =0; i<trips.length;i++){
          
       }
 
-trips.push(newTrip);
 
-// trip response
-return res.status(201).send({ status: 'success', data: { 
-    trip_id:req.body.trip_id,
-    seating_capacity:req.body.seating_capacity,
-    bus_license_number:req.body.bus_license_number,
-    origin: req.body.origin,
-    destination: req.body.destination,
-    trip_date: req.body.trip_date,
-    fare: req.body.farer,
-    status:"active"
- } });
-
+const { error: errors, response: resp } = await insert('trips', newTrip);
+if (errors) {
+  return response(res, 500, 'Oops! unexpected things happened into server', true);
+}
+const { rows, rowCount } = resp;
+if (rowCount > 0) {
+  const [addedProperty] = rows;
+  return response(res, 201, addedProperty);
+}
+return response(res, 400, 'nothing inserted try again!', true);
 }
 
 // get all trip

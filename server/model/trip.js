@@ -3,7 +3,7 @@ const trips = [
     {
         "trip_id": 1,
         "bus_license_number": "RAA200B",
-        "seating_capacity": 0,
+        "seating_capacity":1,
         "origin": "kigali",
         "destination": "rwamagana",
         "trip_date": "1/2/2019",

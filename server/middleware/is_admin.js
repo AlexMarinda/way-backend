@@ -1,14 +1,13 @@
 import JWT from 'jsonwebtoken';
-import users from '../model/users'
-
+import DbHelper from './../helpers/DbHelper';
 // to check if user is admin
 const isAdmin = async (req, res, next) => {
     try {
      const token = req.headers.authorization.split(' ')[1] || req.body.token;
       const decoded = await JWT.verify(token, process.env.JWT_SECRET,{ expiresIn: '24h' });
-      const foundUser = decoded.user;
-      console.log(foundUser);
-       
+      const foundUser = decoded;  
+      const users = await DbHelper.queryAll('users');
+      console.log('users', users);     
       users.forEach((user)=>{
         if(user.email ===foundUser.email){
           if(foundUser.is_admin){
